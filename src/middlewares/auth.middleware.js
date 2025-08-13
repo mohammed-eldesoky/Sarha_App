@@ -13,12 +13,12 @@ export const isAuthorized = async (req, res, next) => {
   const payload = verifyToken(token);
 
   //check user in database
-  const user = await User.findById(payload.id);
+  const userExist = await User.findById(payload.id);
 
-  if (!user) {
+  if (!userExist) {
     throw new Error("user not found", { cause: 404 });
   }
-    req.userId = payload.id;
+    req.user = userExist;
 
   return next();
 };

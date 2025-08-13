@@ -15,7 +15,7 @@ router.delete("/", userService.deleteAcount);
 router.post(
   "/upload-profile-picture",
   isAuthorized,
-  fileUpload().single("profilePicture"),
+  fileUpload({folder:"profile-pictures"}).single("profilePicture"),
   fileValidation(),//single ,array[{},{}], fields,none,any
   userService.uploadProfilePicture
 );

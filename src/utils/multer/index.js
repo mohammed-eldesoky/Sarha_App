@@ -1,10 +1,16 @@
 import multer, { diskStorage } from "multer";
 import { nanoid } from "nanoid";
-
+import fs from "fs"
 // file apload
-export function fileUpload() {
+export function fileUpload({folder,allowtype=["image/jpeg","image/png"]}={}) {
   const storage = diskStorage({
-    destination: "uploads", //any name you want
+    destination: (req, file, cb) => {
+      let dest = `uploads/${req.user._id}/${folder}`;
+      if(!fs.existsSync(dest)){
+      fs.mkdirSync(dest,{recursive:true});
+      }
+      cb(null, dest);
+    }, //any name you want
 
     filename: (req, file, cb) => {
       if (file.mimetype == "applicaion/json") {
@@ -16,11 +22,7 @@ export function fileUpload() {
 
   //file filter
   const fileFilter = (req, file, cb) => {
-    if (
-      ["image/jpeg", "image/png", "image/gif", "image/webp"].includes(
-        file.mimetype
-      )
-    ) {
+    if (allowtype.includes(file.mimetype)) {
       cb(null, true);
     } else {
       cb(new Error("invalid file format ", { cause: 400 })); //global error
