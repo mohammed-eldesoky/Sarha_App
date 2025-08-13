@@ -33,10 +33,10 @@ export const deleteAcount = async (req, res, next) => {
 export const uploadProfilePicture = async (req, res, next) => {
   //req.file becouse we are using multer & single
 
-  // //delete old picture
-  // if(req.user.profilePicture){
-  // fs.unlink(req.user.profilePicture);
-  // } // if user has profile picture delete it
+  //delete old picture
+  if(req.user.profilePicture){
+  fs.unlink(req.user.profilePicture);
+  } // if user has profile picture delete it
 
 
   //update user login profilePic= PATH >>req.file
