@@ -41,10 +41,9 @@ export const uploadProfilePicture = async (req, res, next) => {
 
 
   //update user login profilePic= PATH >>req.file
-  const token = req.headers.authorization;
-  const { id } = verifyToken(token);
+
   const userExist = await User.findByIdAndUpdate(
-    id,
+ req.user._id,
     {
       profilePic: req.file.path,
     },

@@ -229,6 +229,9 @@ export const login = async (req, res, next) => {
   if (userExist.isVerified == false) {
     throw new Error("User is not verified", { cause: 401 });
   }
+  // check password
+  console.log("👉 Entered password:", password);
+  console.log("👉 Hashed password from DB:", userExist.password);
 
   // check password
   const match = bcrypt.compareSync(password, userExist.password);
