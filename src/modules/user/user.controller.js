@@ -25,6 +25,6 @@ router.post(
   "/upload-profile-cloud",
   isAuthorized,  // req >> req.user
   fileuploadCloud().single("profilePicture"),//req.file
-  
+  userService.uploadprofilePictureCloud
 );
 export default router;

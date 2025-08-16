@@ -1,3 +1,4 @@
+
 import { Schema, model } from 'mongoose';
 
 //user schema
@@ -66,8 +67,10 @@ userAgent:{
     enum:["local","google"],
     default:"local"
 },
+//case cloud
 profilePic:{
-    type:String
+  secure_url:String,
+  puplic_id: String
 },
 refreshToken: { type: String },
 },
