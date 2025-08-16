@@ -90,7 +90,7 @@ export const verifyAccount = async (req, res, next) => {
 
   // check otp validity
   if (
-    user.otp !== otp ||
+    user.otp !== Number(otp) ||
     !user.otpExpiration ||
     user.otpExpiration < Date.now()
   ) {
@@ -269,7 +269,7 @@ export const updatePassword = async (req, res, next) => {
   const { oldPassword, newPassword } = req.body;
 
   // get user from token
-  const user = await User.findById(req.userId).select("password");
+  const user = await User.findById(req.user._id).select("password");
   if (!user) {
     throw new Error("User does not exist", { cause: 404 });
   }

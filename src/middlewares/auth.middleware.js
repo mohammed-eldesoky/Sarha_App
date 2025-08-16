@@ -1,24 +1,25 @@
-import { User } from "../DB/models/user.model.js";
-import { verifyToken } from "../utils/token/index.js";
 
 
 export const isAuthorized = async (req, res, next) => {
-  //get token from header
-  const token = req.headers.authorization;
 
-  if (!token) {
-    throw new Error("token is requird", { cause: 401 });
-  }
+    const authHeader = req.headers.authorization;
 
-  const payload = verifyToken(token);
+    if (!authHeader) {
+      throw new Error("token is required", { cause: 401 });
+    }
 
-  //check user in database
-  const userExist = await User.findById(payload.id);
+    const token = authHeader.split(" ")[1]; 
+    const payload = verifyToken(token);
 
-  if (!userExist) {
-    throw new Error("user not found", { cause: 404 });
-  }
-    req.user = userExist;
+    // check user in database
+    const userExist = await User.findById(payload.id);
+    if (!userExist) {
+      throw new Error("user not found", { cause: 404 });
+    }
 
-  return next();
+    req.user = userExist;      
+    req.userId = userExist._id; 
+
+    return next();
+
 };
