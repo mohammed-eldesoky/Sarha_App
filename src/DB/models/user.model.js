@@ -1,4 +1,3 @@
-
 import { Schema, model } from 'mongoose';
 
 //user schema
@@ -32,7 +31,7 @@ password:{
     type: String,
     required: function(){
         if(this.userAgent=="google"){
-return false
+          return false
         }
         return true;
     },
@@ -73,6 +72,17 @@ profilePic:{
   puplic_id: String
 },
 refreshToken: { type: String },
+
+
+failedAttempts: {
+  type: Number,
+  default: 0,
+},
+banUntil: {
+  type: Date,
+},
+
+
 },
     {timestamps: true,toObject:{virtuals:true},toJSON:{virtuals:true}});
 
@@ -89,10 +99,7 @@ schema.virtual('fullName').set(function(value){   //setter
 // clculate the age 
 
 schema.virtual('age').get(function(){
-
    return new Date().getFullYear() -new Date(this.dob).getFullYear()
 })
 
-
-
- export const User =model('User',schema)
+export const User =model('User',schema)

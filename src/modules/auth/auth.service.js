@@ -70,55 +70,86 @@ export const register = async (req, res, next) => {
 
 // verify account service
 export const verifyAccount = async (req, res, next) => {
-  //get data from req body
   const { email, otp } = req.body;
-  //check user existance : otp & otpExpiration
-  const user = await User.findOne({
-    email: email,
-    otp: otp,
-    otpExpiration: { $gt: Date.now() }, // check if otp is not expired
-  }); //return {} | null
+
+  const user = await User.findOne({ email });
 
   if (!user) {
+    throw new Error("User not found", { cause: 404 });
+  }
+
+  // check if user is banned
+  if (user.banUntil && user.banUntil > Date.now()) {
+    const remaining = Math.ceil((user.banUntil - Date.now()) / 1000);
+    return res.status(403).json({
+      message: `You are temporarily banned. Try again after ${remaining} seconds.`,
+      success: false,
+    });
+  }
+
+  // check otp validity
+  if (user.otp !== otp || !user.otpExpiration || user.otpExpiration < Date.now()) {
+    user.failedAttempts += 1;
+
+    if (user.failedAttempts >= 5) {
+      user.banUntil = new Date(Date.now() + 5 * 60 * 1000); // ban for 5 min
+      user.failedAttempts = 0; // reset attempts after ban
+    }
+
+    await user.save();
+
     throw new Error("Invalid OTP or OTP expired", { cause: 401 });
   }
-  user.isVerified = true; // update isVerified to true
-  user.otp = undefined; // clear otp after verification
-  user.otpExpiration = undefined; // clear otpExpiration after verification
-  // update user >> isVerified:true
+
+  // success -> reset
+  user.isVerified = true;
+  user.otp = undefined;
+  user.otpExpiration = undefined;
+  user.failedAttempts = 0;
+  user.banUntil = undefined;
+
   await user.save();
-  //send response
+
   return res.status(200).json({
     message: "Account verified successfully",
     success: true,
   });
 };
 
-//resend otp service
+
+// resend otp service
 
 export const resendOtp = async (req, res, next) => {
-  //get data from req
   const { email } = req.body;
-  //generate new otp
-  const { otp, otpExpiration } = generateOtp();
-  //update user with new otp and otpExpiration
 
-  const updatedUser = await User.updateOne(
-    {
-      email: email,
-    },
-    {
-      otp: otp,
-      otpExpiration: otpExpiration,
-    }
-  );
-  //send email with new otp
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new Error("User not found", { cause: 404 });
+  }
+
+  // prevent resend if user is banned
+  if (user.banUntil && user.banUntil > Date.now()) {
+    const remaining = Math.ceil((user.banUntil - Date.now()) / 1000);
+    return res.status(403).json({
+      message: `You are temporarily banned. Try again after ${remaining} seconds.`,
+      success: false,
+    });
+  }
+
+  // generate new otp
+  const { otp, otpExpiration } = generateOtp();
+
+  user.otp = otp;
+  user.otpExpiration = otpExpiration;
+  await user.save();
+
+  // send email with new otp
   sendEmail({
     to: email,
     subject: "Resend OTP",
-    html: `<P>Your new verification code is: ${otp}</P>`,
+    html: `<p>Your new verification code is: ${otp}</p>`,
   });
-  //send response
 
   return res.status(200).json({
     message: "OTP resent successfully",
