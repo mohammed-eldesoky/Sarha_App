@@ -72,7 +72,15 @@ export const uploadprofilePictureCloud =async (req,res,next)=>{
 
 const user = req.user;
 const file = req.file;
-const {secure_url,public_id}  = await cloudinary.uploader.upload(req.file.path)
+
+//delete old picture
+
+await cloudinary.uploader.destroy(user.profilePic.public_id)
+
+// upload new picture
+const {secure_url,public_id}  = await cloudinary.uploader.upload(req.file.path,{
+  folder:`users/${user._id}/profile-pic`
+})
 
 //update into db
 await User.updateOne({_id:req.user._id},{profilePic:{secure_url,public_id}})
