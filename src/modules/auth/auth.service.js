@@ -4,6 +4,7 @@ import { sendEmail } from "../../utils/email/index.js";
 import { generateOtp } from "./../../utils/otp/index.js";
 import { OAuth2Client } from "google-auth-library";
 import jwt from "jsonwebtoken";
+import { comparePassword, hashPassword } from "../../utils/hash/index.js";
 
 // Register user service
 export const register = async (req, res, next) => {
@@ -37,7 +38,7 @@ export const register = async (req, res, next) => {
   const user = new User({
     fullName,
     email,
-    password: bcrypt.hashSync(password, 10), // hash password
+    password: hashPassword(password), // hash password
     phoneNumber,
     dob,
   });
@@ -123,7 +124,7 @@ export const verifyAccount = async (req, res, next) => {
 
 // send otp service
 
- export const sendOtp = async (req, res, next) =>{
+export const sendOtp = async (req, res, next) => {
   const { email } = req.body;
 
   const user = await User.findOneAndUpdate({ email });
@@ -159,8 +160,8 @@ export const verifyAccount = async (req, res, next) => {
     message: "OTP resent successfully",
     success: true,
   });
- }
-  
+};
+
 // //login with google
 export const loginWithGoogle = async (req, res, next) => {
   //get data from body
@@ -231,7 +232,7 @@ export const login = async (req, res, next) => {
   }
 
   // check password
-  const match = bcrypt.compareSync(password, userExist.password);
+  const match = comparePassword(password, userExist.password);
   if (!match) {
     throw new Error("Invalid credentials", { cause: 401 });
   }
@@ -325,4 +326,37 @@ export const refreshAccessToken = async (req, res, next) => {
   });
 };
 
+// forget password
 
+/**
+ * @_remember_front_end
+ */
+export const forgetPassword = async (req, res, next) => {
+  //get data from req.body
+  const { email, otp, newPassword } = req.body;
+
+  // check if user exists in db
+  const user = await User.findOne({ email }); // {} || null
+
+  if (!user) {
+    throw new Error("User not found", { cause: 404 });
+  }
+  //check otp valid
+  if (user.otp != otp) {
+    throw new Error("Invalid OTP", { cause: 400 });
+  }
+  //check otp expired
+  if (Date.now() > user.otpExpiration) {
+    throw new Error("OTP expired", { cause: 400 });
+  }
+
+  // update password
+
+  user.password = hashPassword(newPassword);
+  await user.save(); //create if not exist or update if exist
+  //send res
+  return res.status(200).json({
+    message: "Password updated successfully",
+    success: true,
+  });
+};

@@ -18,4 +18,5 @@ router.post("/send-otp", authService.sendOtp);
 router.post("/google", authService.loginWithGoogle);
 router.put("/update-password",isAuthorized,authService.updatePassword);
 router.post("/refresh",authService.refreshAccessToken)
+router.put("/forget-password",authService.forgetPassword)
 export default router;
