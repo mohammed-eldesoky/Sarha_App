@@ -14,7 +14,7 @@ router.post(
 
 router.post("/login", authService.login);
 router.post("/verify-account", authService.verifyAccount);
-router.post("/resend-otp", authService.resendOtp);
+router.post("/send-otp", authService.sendOtp);
 router.post("/google", authService.loginWithGoogle);
 router.put("/update-password",isAuthorized,authService.updatePassword);
 router.post("/refresh",authService.refreshAccessToken)

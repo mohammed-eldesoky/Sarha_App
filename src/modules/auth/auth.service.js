@@ -121,12 +121,12 @@ export const verifyAccount = async (req, res, next) => {
   });
 };
 
-// resend otp service
+// send otp service
 
- export const resendOtp = async (req, res, next) =>{
+ export const sendOtp = async (req, res, next) =>{
   const { email } = req.body;
 
-  const user = await User.findOne({ email });
+  const user = await User.findOneAndUpdate({ email });
 
   if (!user) {
     throw new Error("User not found", { cause: 404 });
@@ -151,7 +151,7 @@ export const verifyAccount = async (req, res, next) => {
   // send email with new otp
   sendEmail({
     to: email,
-    subject: "Resend OTP",
+    subject: "send OTP",
     html: `<p>Your new verification code is: ${otp}</p>`,
   });
 
@@ -161,7 +161,6 @@ export const verifyAccount = async (req, res, next) => {
   });
  }
   
-
 // //login with google
 export const loginWithGoogle = async (req, res, next) => {
   //get data from body
@@ -325,3 +324,5 @@ export const refreshAccessToken = async (req, res, next) => {
     });
   });
 };
+
+
