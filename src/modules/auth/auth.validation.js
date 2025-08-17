@@ -1,15 +1,28 @@
-import joi from "joi"
- // validation
+import joi from "joi";
+import { generalFields } from "../../middlewares/validation.middleware.js";
+// validation
 
-export const registerSchema =joi.object({
-    fullName: joi.string().min(3).max(50).required(),
-    email: joi.string().email(), //optional if phoneNumber exist
-    password: joi
-      .string()
-      .regex(/^[a-zA-Z0-9]{8,30}$/)
-      .required(),
-    phoneNumber: joi.string().length(11), //optional if email exist
-    dob: joi.date(),
-  }).or("email","phoneNumber")
+export const registerSchema = joi
+  .object({
+    fullName: generalFields.fullName.required(),
+    email: generalFields.email, //optional if phoneNumber exist
+    password: generalFields.password,
+    phoneNumber: generalFields.phoneNumber, //optional if email exist
+    dob: generalFields.dob,
+  })
+  .or("email", "phoneNumber");
 
- 
+export const loginSchema = joi
+  .object({
+    email: generalFields.email,
+    phoneNumber: generalFields.phoneNumber,
+    password: generalFields.password,
+  })
+  .or("email", "phoneNumber");
+
+export const forgetPasswordSchema = joi.object({
+  email: generalFields.email.required(),
+
+  otp: generalFields.otp.required(),
+  neWpassword: generalFields.password.required(),
+});
