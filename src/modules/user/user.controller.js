@@ -5,7 +5,7 @@ import { fileUpload as fileuploadCloud } from "../../utils/multer/multer.cloud.j
 import { fileValidation } from "./../../middlewares/file.validaion.js";
 import { isAuthorized } from "./../../middlewares/auth.middleware.js";
 const router = Router();
-router.delete("/", userService.deleteAcount);
+router.delete("/",isAuthorized, userService.deleteAcount);
 
 router.post(
   "/upload-profile-picture",
