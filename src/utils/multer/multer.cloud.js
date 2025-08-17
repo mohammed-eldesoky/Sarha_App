@@ -1,7 +1,7 @@
 import multer, { diskStorage } from "multer";
 
 // file apload
-export function fileUpload({allowtype=["image/jpeg","image/png"]}={}) {
+export function fileUpload ({allowtype=["image/jpeg","image/png"]}={}) {
   const storage = diskStorage({}); // TEMB =>  random file name
 
   //file filter

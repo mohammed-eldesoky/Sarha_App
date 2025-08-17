@@ -66,31 +66,37 @@ export const uploadProfilePicture = async (req, res, next) => {
     });
 };
 
-export const uploadprofilePictureCloud =async (req,res,next)=>{
-//get data from user
 
-const user = req.user;
-const file = req.file;
 
-//delete old picture
 
-await cloudinary.uploader.destroy(user.profilePic.public_id)
+export const uploadprofilePictureCloud = async (req, res, next) => {
 
-// upload new picture
-const {secure_url,public_id}  = await cloudinary.uploader.upload(req.file.path,{
-  folder:`users/${user._id}/profile-pic`
-})
+    const user = req.user;
+    const file = req.file;
 
+ // delete old picture
+    if (user.profilePic?.public_id) {
+      await cloudinary.uploader.destroy(user.profilePic.public_id);
+    }
+
+  //upload new picture
+    const { secure_url, public_id } = await cloudinary.uploader.upload(
+      file.path,
+      {
+        folder: `users/${user._id}/profile-pic`,
+      }
+    );
 //update into db
-await User.updateOne({_id:req.user._id},{profilePic:{secure_url,public_id}})
-
-
-  //send response
-  return res
-    .status(200)
-    .json({
-      message: "your pictute uploaded successfully",
+  
+    await User.updateOne(
+      { _id: user._id },
+      { profilePic: { secure_url, public_id } }
+    );
+//send response
+    return res.status(200).json({
+      message: "Your picture uploaded successfully",
       success: true,
-      data: {secure_url,public_id},
+      data: { secure_url, public_id },
     });
-}
+
+};

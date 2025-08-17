@@ -123,7 +123,7 @@ export const verifyAccount = async (req, res, next) => {
 
 // resend otp service
 
-export const resendOtp = async (req, res, next) => {
+ export const resendOtp = async (req, res, next) =>{
   const { email } = req.body;
 
   const user = await User.findOne({ email });
@@ -159,7 +159,8 @@ export const resendOtp = async (req, res, next) => {
     message: "OTP resent successfully",
     success: true,
   });
-};
+ }
+  
 
 // //login with google
 export const loginWithGoogle = async (req, res, next) => {
@@ -229,9 +230,6 @@ export const login = async (req, res, next) => {
   if (userExist.isVerified == false) {
     throw new Error("User is not verified", { cause: 401 });
   }
-  // check password
-  console.log("👉 Entered password:", password);
-  console.log("👉 Hashed password from DB:", userExist.password);
 
   // check password
   const match = bcrypt.compareSync(password, userExist.password);
