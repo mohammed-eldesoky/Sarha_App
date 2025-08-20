@@ -7,8 +7,7 @@ export const verifyToken = (token, secretkey =process.env.TOKEN_SECRET ) => {
 
 // generate token
 
-export const generateToken = (
-  payload,
-  secretkey = process.env.TOKEN_SECRET,
-  options={}
-) => {};
+export const generateToken = ( {payload,  secretkey = process.env.TOKEN_SECRET,options={expiresIn:"15m"}}) => {
+return jwt.sign(payload,secretkey,options)
+
+};
