@@ -241,14 +241,14 @@ export const login = async (req, res, next) => {
   // create JWT token
   const token = jwt.sign(
     { id: userExist._id, email: userExist.email },
-    "fhdfhdfhdfhdfhdfh", // verifyToken
+    process.env.TOKEN_SECRET, // verifyToken
     { expiresIn: "15m" }
   );
 
   // create refresh token
   const refreshToken = jwt.sign(
     { id: userExist._id, email: userExist.email },
-    "fhdfhdfhdfhdfhdfh",
+    process.env.TOKEN_SECRET,
     { expiresIn: "7d" }
   );
 
@@ -309,7 +309,7 @@ export const refreshAccessToken = async (req, res, next) => {
   }
 
   // verify refresh token
-  jwt.verify(refreshToken, "fhdfhdfhdfhdfhdfh", (err, payload) => {
+  jwt.verify(refreshToken, process.env.TOKEN_SECRET, (err, payload) => {
     if (err) {
       throw new Error("Invalid refresh token", { cause: 403 });
     }
@@ -317,7 +317,7 @@ export const refreshAccessToken = async (req, res, next) => {
     // generate new access token
     const newAccessToken = jwt.sign(
       { id: payload.id, email: payload.email },
-      "fhdfhdfhdfhdfhdfh",
+      process.env.TOKEN_SECRET,
       { expiresIn: "15m" }
     );
 
@@ -362,20 +362,17 @@ export const forgetPassword = async (req, res, next) => {
   });
 };
 
-
 // logout
 
-export const logout = async(req,res,next)=>{
+export const logout = async (req, res, next) => {
   //get data from req
   const token = req.headres.authorization;
-//storre data into db 
-await Token.create({token , user:req.user._id}) //req .user from auth middle ware
+  //storre data into db
+  await Token.create({ token, user: req.user._id }); //req .user from auth middle ware
 
-//send res
+  //send res
   return res.status(200).json({
     message: "user logout  successfully",
     success: true,
   });
-
-
-}
+};
