@@ -5,6 +5,7 @@ import { generateOtp } from "./../../utils/otp/index.js";
 import { OAuth2Client } from "google-auth-library";
 import jwt from "jsonwebtoken";
 import { comparePassword, hashPassword } from "../../utils/hash/index.js";
+import { Token } from "../../DB/models/token.model.js";
 
 // Register user service
 export const register = async (req, res, next) => {
@@ -364,7 +365,17 @@ export const forgetPassword = async (req, res, next) => {
 
 // logout
 
-export const logout =(req,res,next)=>{
+export const logout = async(req,res,next)=>{
   //get data from req
   const token = req.headres.authorization;
+//storre data into db 
+await Token.create({token , user:req.user._id}) //req .user from auth middle ware
+
+//send res
+  return res.status(200).json({
+    message: "user logout  successfully",
+    success: true,
+  });
+
+
 }
