@@ -360,3 +360,11 @@ export const forgetPassword = async (req, res, next) => {
     success: true,
   });
 };
+
+
+// logout
+
+export const logout =(req,res,next)=>{
+  //get data from req
+  const token = req.headres.authorization;
+}
