@@ -248,14 +248,15 @@ export const login = async (req, res, next) => {
   // create refresh token
   const refreshToken = generateToken({
     payload: { id: userExist._id },
-    options: { expiresIn: "15m" },
+    options: { expiresIn: "7d" },
   });
 
 //
 await Token.create({
   token:refreshToken,
   user:userExist._id,
-  type:"refresh"
+  type:"refresh",
+    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days 
 })
  
 

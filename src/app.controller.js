@@ -2,6 +2,7 @@ import { connectDB } from "./DB/connection.js";
 import { authRouter, messageRouter, userRouter } from "./modules/index.js";
 import cors from "cors";
 import { globalErorrHandler } from "./utils/error/index.js";
+import { startExpiredTokensCron } from "./utils/jobs/index.js";
 
 function bootstrap(app, express) {
   //parse req body [raw json]
@@ -26,5 +27,8 @@ function bootstrap(app, express) {
 
   //connectDB  : >> operation buffering
   connectDB();
+
+  startExpiredTokensCron()
+
 }
 export default bootstrap;

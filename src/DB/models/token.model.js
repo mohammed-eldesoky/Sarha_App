@@ -15,7 +15,10 @@ type:{
     type:String,
     enum:["access","refresh"],
 },
-
+   expiresAt: {
+      type: Date,
+      required: true,
+    },
 
 },{timestamps:true});
 
