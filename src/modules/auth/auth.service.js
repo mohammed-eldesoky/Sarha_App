@@ -6,6 +6,7 @@ import { OAuth2Client } from "google-auth-library";
 import jwt from "jsonwebtoken";
 import { comparePassword, hashPassword } from "../../utils/hash/index.js";
 import { Token } from "../../DB/models/token.model.js";
+import { generateToken } from "../../utils/token/index.js";
 
 // Register user service
 export const register = async (req, res, next) => {
@@ -239,28 +240,30 @@ export const login = async (req, res, next) => {
   }
 
   // create JWT token
-  const token = jwt.sign(
-    { id: userExist._id, email: userExist.email },
-    process.env.TOKEN_SECRET, // verifyToken
-    { expiresIn: "15m" }
-  );
+  const accessToken = generateToken({
+    payload: { id: userExist._id },
+    options: { expiresIn: "15m" },
+  });
 
   // create refresh token
-  const refreshToken = jwt.sign(
-    { id: userExist._id, email: userExist.email },
-    process.env.TOKEN_SECRET,
-    { expiresIn: "7d" }
-  );
+  const refreshToken = generateToken({
+    payload: { id: userExist._id },
+    options: { expiresIn: "15m" },
+  });
 
-  // store refresh token in DB
-  userExist.refreshToken = refreshToken;
-  await userExist.save();
+//
+await Token.create({
+  token:refreshToken,
+  user:userExist._id,
+  type:"refresh"
+})
+ 
 
   // send response
   return res.status(200).json({
     message: "Login successfully",
     success: true,
-    token,
+    accessToken,
     refreshToken,
   });
 };
@@ -368,7 +371,7 @@ export const logout = async (req, res, next) => {
   //get data from req
   const token = req.headres.authorization;
   //storre data into db
-  await Token.create({ token, user: req.user._id }); //req .user from auth middle ware
+  await Token.create({ token, user: req.user._id }); //req.user from auth middleware
 
   //send res
   return res.status(200).json({

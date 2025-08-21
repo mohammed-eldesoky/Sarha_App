@@ -1,7 +1,8 @@
 import { connectDB } from "./DB/connection.js";
 import { authRouter, messageRouter, userRouter } from "./modules/index.js";
 import cors from "cors";
-import fs from "fs";
+import { globalErorrHandler } from "./utils/error/index.js";
+
 function bootstrap(app, express) {
   //parse req body [raw json]
   app.use(express.json());
@@ -21,20 +22,7 @@ function bootstrap(app, express) {
   app.use("/user", userRouter);
 
   //global error handler
-  app.use((err, req, res, next) => {
-    if (req.file) {
-      fs.unlinkSync(req.file.path); //if error, delete the file
-    }
-
-    res
-      .status(err.cause || 500)
-      .json({
-        message: err.message,
-        success: false,
-        stack: err.stack,
-        error: err,
-      });
-  });
+  app.use(globalErorrHandler);
 
   //connectDB  : >> operation buffering
   connectDB();
