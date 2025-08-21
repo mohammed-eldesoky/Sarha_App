@@ -72,7 +72,8 @@ export const uploadprofilePictureCloud = async (req, res, next) => {
     file.path,
     {
       folder: `users/${user._id}/profile-pic`,
-    }
+      transformation:[{ width: 300, height: 300, crop: "fill" }] //select  size 
+    },
   );
   //update into db
 
