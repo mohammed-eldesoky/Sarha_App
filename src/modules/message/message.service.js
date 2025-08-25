@@ -1,8 +1,30 @@
+import cloudinary, {
+  uploadFiles,
+} from "./../../utils/cloud/cloudnairy.copnfig.js";
+import { Message } from "./../../DB/models/message.model.js";
+//send message
 
-//send message 
+export const sendMessage = async (req, res, next) => {
+  //get data from req
+  const { content } = req.body;
+  const { receiver } = req.params;
+  const { files } = req;
+  //upload into cloudinary
+  const attchment = await uploadFiles({
+    files,
+    options: { folder: `${receiver}/message` },
+  });
 
-export const sendMessage =(req,res,next)=>{
-
-
-    
-}
+  //create message into db
+  const messageCreate = Message.create({
+    content,
+    receiver,
+    attchment,
+  });
+  //send response
+  return res.status(200).json({
+    message: "message sent successfully",
+    success: true,
+    data: messageCreate,
+  });
+};

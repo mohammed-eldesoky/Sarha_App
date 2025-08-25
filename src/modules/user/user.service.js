@@ -1,6 +1,5 @@
 import { verifyToken } from "../../utils/token/index.js";
 import { User } from "./../../DB/models/user.model.js";
-import jwt from "jsonwebtoken";
 import fs from "fs";
 import cloudinary from "./../../utils/cloud/cloudnairy.copnfig.js";
 // 1- delete userAccount
