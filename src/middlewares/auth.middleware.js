@@ -23,6 +23,10 @@ export const isAuthorized = async (req, res, next) => {
     throw new Error("user not found", { cause: 404 });
   }
 
+if (userExist.credentialUpdateAt >new Date( payload.iat * 1000)){
+      throw new Error("token expired", { cause: 401 });
+}// 
+
   req.user = userExist;
   req.userId = userExist._id;
 

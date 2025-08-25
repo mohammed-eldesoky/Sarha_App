@@ -358,6 +358,7 @@ export const forgetPassword = async (req, res, next) => {
   // update password
 
   user.password = hashPassword(newPassword);
+  user.credentialUpdateAt= Date.now();
   await user.save(); //create if not exist or update if exist
   //send res
   return res.status(200).json({
