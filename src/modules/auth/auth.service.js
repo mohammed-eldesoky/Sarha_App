@@ -358,6 +358,8 @@ export const forgetPassword = async (req, res, next) => {
 
   user.password = hashPassword(newPassword);
   user.credentialUpdateAt = Date.now();
+  user.otp = undefined;
+  user.otpExpiration = undefined;
   await user.save(); //create if not exist or update if exist
   //destroy all refresh token
   await Token.deleteMany({ user: user._id, type: "refresh" });
