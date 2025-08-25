@@ -251,14 +251,13 @@ export const login = async (req, res, next) => {
     options: { expiresIn: "7d" },
   });
 
-//
-await Token.create({
-  token:refreshToken,
-  user:userExist._id,
-  type:"refresh",
-    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days 
-})
- 
+  //
+  await Token.create({
+    token: refreshToken,
+    user: userExist._id,
+    type: "refresh",
+    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+  });
 
   // send response
   return res.status(200).json({
@@ -358,8 +357,10 @@ export const forgetPassword = async (req, res, next) => {
   // update password
 
   user.password = hashPassword(newPassword);
-  user.credentialUpdateAt= Date.now();
+  user.credentialUpdateAt = Date.now();
   await user.save(); //create if not exist or update if exist
+  //destroy all refresh token
+  await Token.deleteMany({ user: user._id, type: "refresh" });
   //send res
   return res.status(200).json({
     message: "Password updated successfully",

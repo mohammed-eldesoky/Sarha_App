@@ -67,7 +67,8 @@ export const asyncHandler = (fn) => {
 // };
 
 export const globalErorrHandler = async (err, req, res, next) => {
-  if (req.file) {
+try {
+    if (req.file) {
     fs.unlinkSync(req.file.path); // if error, delete the file
   }
 
@@ -123,4 +124,12 @@ export const globalErorrHandler = async (err, req, res, next) => {
     stack: err.stack,
     error: err,
   });
+} catch (err) {
+    res.status(err.cause || 500).json({
+    message: err.message,
+    success: false,
+    stack: err.stack,
+    error: err,
+})
+}
 };
