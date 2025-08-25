@@ -3,8 +3,22 @@ import { authRouter, messageRouter, userRouter } from "./modules/index.js";
 import cors from "cors";
 import { globalErorrHandler } from "./utils/error/index.js";
 import { startExpiredTokensCron } from "./utils/jobs/index.js";
+import { rateLimit } from "express-rate-limit";
 
 function bootstrap(app, express) {
+  // HANDLE RATE LIMIT
+
+  const limiter = rateLimit({
+    windowMs: 60 * 100, // 1miniut
+    limit: 5,
+    handler: (req, res, next, options) => {
+      throw new Error(options.message, { cause: options.statusCode });
+    },
+
+    skipSuccessfulRequests:true,
+  }); //if send morethan 5 will be error
+
+  app.use(limiter);
   //parse req body [raw json]
   app.use(express.json());
 
@@ -28,7 +42,6 @@ function bootstrap(app, express) {
   //connectDB  : >> operation buffering
   connectDB();
 
-  startExpiredTokensCron()
-
+  startExpiredTokensCron();
 }
 export default bootstrap;
