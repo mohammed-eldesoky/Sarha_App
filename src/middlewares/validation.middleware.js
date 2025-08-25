@@ -2,7 +2,8 @@ import joi from "joi";
 import { fileUpload } from "../utils/multer/index.js";
 export const isValid = (schema) => {
   return (req, res, next) => {
-    const { value, error } = schema.validate(req.body, { abortEarly: false });
+    let data =   { ...req.body, ...req.params, ...req.query }
+    const { value, error } = schema.validate(data, { abortEarly: false });
     if (error) {
       let errorMessages = error.details.map((err) => {
         return err.message;
@@ -30,5 +31,5 @@ export const generalFields = {
 
   dob: joi.date(),
   otp: joi.string().length(5),
-  repassword:joi.string().min(8).valid(joi.ref("password")) // should be equal to `password`
+  repassword: joi.string().min(8).valid(joi.ref("password")), // should be equal to `password`
 };

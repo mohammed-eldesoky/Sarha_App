@@ -10,7 +10,7 @@ export const registerSchema = joi
     phoneNumber: generalFields.phoneNumber, //optional if email exist
     dob: generalFields.dob,
   })
-  .or("email", "phoneNumber");
+  .or("email", "phoneNumber").required();
 
 export const loginSchema = joi
   .object({
@@ -18,7 +18,7 @@ export const loginSchema = joi
     phoneNumber: generalFields.phoneNumber,
     password: generalFields.password,
   })
-  .or("email", "phoneNumber");
+  .or("email", "phoneNumber").required();
 
 export const forgetPasswordSchema = joi.object({
   email: generalFields.email.required(),
