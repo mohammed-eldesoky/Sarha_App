@@ -2,14 +2,14 @@ import { verifyToken } from "../../utils/token/index.js";
 import { User } from "./../../DB/models/user.model.js";
 import fs from "fs";
 import cloudinary from "./../../utils/cloud/cloudnairy.copnfig.js";
-import { Token } from './../../DB/models/token.model.js';
+import { Token } from "./../../DB/models/token.model.js";
 // 1- delete userAccount
 
 export const deleteAcount = async (req, res, next) => {
   //soft delete and logout from all devices
   await User.updateOne(
     { id: req.user._id },
-    { deletedAt: Date.now(), credentialUpdateAt: Date.now() } 
+    { deletedAt: Date.now(), credentialUpdateAt: Date.now() }
   );
   // delete token from all devices
   await Token.deleteMany({ userId: req.user._id });
@@ -54,6 +54,7 @@ export const uploadProfilePicture = async (req, res, next) => {
   });
 };
 
+//3- upload in cloudniary
 export const uploadprofilePictureCloud = async (req, res, next) => {
   const user = req.user;
   const file = req.file;
@@ -82,5 +83,26 @@ export const uploadprofilePictureCloud = async (req, res, next) => {
     message: "Your picture uploaded successfully",
     success: true,
     data: { secure_url, public_id },
+  });
+};
+
+// 4- get user profile
+export const getProfile = async (req, res, next) => {
+  // find user
+  const user = await User.findOne(
+    { _id: req.user._id },
+    {},
+    { populate: [{ path: "messages"}]}
+  ); // return {}||null
+
+  if (!user) {
+    throw new Error("User not found", { cause: 404 });
+  }
+
+  // send response
+  return res.status(200).json({
+    message: "User profile retrieved successfully",
+    success: true,
+    data: user,
   });
 };

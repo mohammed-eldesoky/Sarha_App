@@ -39,7 +39,7 @@ export const getMessage = async (req, res, next) => {
   const message = await Message.findOne(
     { _id: messageId, receiver: req.user._id },
     {},
-    { populate: { path: "sender", select: "-password -createdAt -updatedAt -_v" } }
+    { populate: [{ path: "sender", select: "-password -createdAt -updatedAt -_v" } ]}
   ); // return {}||null
 
   if (!message) {

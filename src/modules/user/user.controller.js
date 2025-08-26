@@ -5,7 +5,7 @@ import { fileUpload as fileuploadCloud } from "../../utils/multer/multer.cloud.j
 import { fileValidation } from "./../../middlewares/file.validaion.js";
 import { isAuthorized } from "./../../middlewares/auth.middleware.js";
 const router = Router();
-router.delete("/",isAuthorized, userService.deleteAcount);
+router.delete("/", isAuthorized, userService.deleteAcount);
 
 router.post(
   "/upload-profile-picture",
@@ -17,8 +17,11 @@ router.post(
 
 router.post(
   "/upload-profile-cloud",
-  isAuthorized,  // req >> req.user
-  fileuploadCloud().single("profilePicture"),//req.file
+  isAuthorized, // req >> req.user
+  fileuploadCloud().single("profilePicture"), //req.file
   userService.uploadprofilePictureCloud
 );
+
+// 4- get user profile
+router.get("/profile", isAuthorized, userService.getProfile);
 export default router;
