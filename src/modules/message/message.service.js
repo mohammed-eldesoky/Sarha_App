@@ -20,6 +20,7 @@ export const sendMessage = async (req, res, next) => {
     content,
     receiver,
     attchment,
+    sender: req.user?._id, // if sender exists
   });
   //send response
   return res.status(200).json({

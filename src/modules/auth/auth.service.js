@@ -299,36 +299,36 @@ export const updatePassword = async (req, res, next) => {
 
 //refresh token
 
-export const refreshAccessToken = async (req, res, next) => {
-  const { refreshToken } = req.body;
-  if (!refreshToken) {
-    throw new Error("Refresh token is required", { cause: 401 });
-  }
+// export const refreshAccessToken = async (req, res, next) => {
+//   const { refreshToken } = req.body;
+//   if (!refreshToken) {
+//     throw new Error("Refresh token is required", { cause: 401 });
+//   }
 
-  // check if refresh token is in DB
-  const user = await User.findOne({ refreshToken });
-  if (!user) {
-    throw new Error("Invalid refresh token", { cause: 403 });
-  }
+//   // check if refresh token is in DB
+//   const user = await User.findOne({ refreshToken });
+//   if (!user) {
+//     throw new Error("Invalid refresh token", { cause: 403 });
+//   }
 
-  // verify refresh token
-  jwt.verify(refreshToken, process.env.TOKEN_SECRET, (err, payload) => {
-    if (err) {
-      throw new Error("Invalid refresh token", { cause: 403 });
-    }
+//   // verify refresh token
+//   jwt.verify(refreshToken, process.env.TOKEN_SECRET, (err, payload) => {
+//     if (err) {
+//       throw new Error("Invalid refresh token", { cause: 403 });
+//     }
 
-    // generate new access token
-    const newAccessToken = jwt.sign(
-      { id: payload.id, email: payload.email },
-      process.env.TOKEN_SECRET,
-      { expiresIn: "15m" }
-    );
+//     // generate new access token
+//     const newAccessToken = jwt.sign(
+//       { id: payload.id, email: payload.email },
+//       process.env.TOKEN_SECRET,
+//       { expiresIn: "15m" }
+//     );
 
-    return res.status(200).json({
-      accessToken: newAccessToken,
-    });
-  });
-};
+//     return res.status(200).json({
+//       accessToken: newAccessToken,
+//     });
+//   });
+// };
 
 // forget password
 
