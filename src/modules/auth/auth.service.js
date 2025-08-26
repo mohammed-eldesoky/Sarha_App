@@ -238,7 +238,11 @@ export const login = async (req, res, next) => {
   if (!match) {
     throw new Error("Invalid credentials", { cause: 401 });
   }
-
+// check if user deleted 
+  if (userExist.deletedAt) {
+   userExist.deletedAt= undefined;
+   await userExist.save();
+  }
   // create JWT token
   const accessToken = generateToken({
     payload: { id: userExist._id },

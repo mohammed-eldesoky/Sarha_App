@@ -2,20 +2,17 @@ import { verifyToken } from "../../utils/token/index.js";
 import { User } from "./../../DB/models/user.model.js";
 import fs from "fs";
 import cloudinary from "./../../utils/cloud/cloudnairy.copnfig.js";
+import { Token } from './../../DB/models/token.model.js';
 // 1- delete userAccount
 
 export const deleteAcount = async (req, res, next) => {
-  //delete user from server >>cloudnairy ||local
-  if (req.user.profilePic.public_id) {
-    await cloudinary.api.delete_resources_by_prefix(
-      `users/${req.user._id}/profile-pic`
-    );// 
-
-    await cloudinary.api.delete_folder(`users/${req.user._id}/profile-pic`); // if user has a profile picture, delete it from cloudinary
-  }
-
-  //delete user from database
-  await User.deleteOne({ _id: req.user._id });
+  //soft delete and logout from all devices
+  await User.updateOne(
+    { id: req.user._id },
+    { deletedAt: Date.now(), credentialUpdateAt: Date.now() } 
+  );
+  // delete token from all devices
+  await Token.deleteMany({ userId: req.user._id });
   //send response
   return res.status(200).json({
     message: "User deleted successfully",
@@ -71,8 +68,8 @@ export const uploadprofilePictureCloud = async (req, res, next) => {
     file.path,
     {
       folder: `users/${user._id}/profile-pic`,
-      transformation:[{ width: 300, height: 300, crop: "fill" }] //select  size 
-    },
+      transformation: [{ width: 300, height: 300, crop: "fill" }], //select  size
+    }
   );
   //update into db
 
