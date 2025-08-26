@@ -29,3 +29,26 @@ export const sendMessage = async (req, res, next) => {
     data: messageCreate,
   });
 };
+
+// get specific message
+export const getMessage = async (req, res, next) => {
+  //get message id from params
+  const { messageId } = req.params;
+
+  //find message
+  const message = await Message.findOne(
+    { _id: messageId, receiver: req.user._id },
+    {},
+    { populate: { path: "sender", select: "-password -createdAt -updatedAt -_v" } }
+  ); // return {}||null
+
+  if (!message) {
+    throw new Error("Message not found", { cause: 404 });
+  }
+  // send response
+  return res.status(200).json({
+    message: "message retrieved successfully",
+    success: true,
+    data: { message },
+  });
+};

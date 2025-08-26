@@ -7,3 +7,9 @@ export const sendMessageSchema =joi.object({
      sender:joi.string().hex().length(24),
 
 }).required()
+
+
+// schema for get specific message
+export const getMessageSchema = joi.object({
+    messageId: joi.string().hex().length(24).required()
+}).required();

@@ -2,7 +2,7 @@ import { Router } from "express";
 import * as messageService from "./message.service.js";
 import { fileUpload } from "./../../utils/multer/multer.cloud.js";
 import { isValid } from "./../../middlewares/validation.middleware.js";
-import { sendMessageSchema } from "./message.validation.js";
+import { getMessageSchema, sendMessageSchema } from "./message.validation.js";
 import { isAuthorized } from "./../../middlewares/auth.middleware.js";
 
 const router = Router();
@@ -21,6 +21,14 @@ router.post(
   fileUpload().array("attachments", 2),
   isValid(sendMessageSchema),
   messageService.sendMessage
+);
+
+// get specific message
+router.get(
+  "/:id",
+  isAuthorized,
+  isValid(getMessageSchema),
+  messageService.getMessage
 );
 
 export default router;
