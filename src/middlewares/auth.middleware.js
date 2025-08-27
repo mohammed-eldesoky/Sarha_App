@@ -9,7 +9,7 @@ export const isAuthorized = async (req, res, next) => {
     throw new Error("token is required", { cause: 401 });
   }
 
-  const token = authHeader.split(" ")[1];
+  const token = authHeader
   const payload = verifyToken(token);
   //check token into db
   const blockedToken = await Token.findOne({ token, type: "access" });

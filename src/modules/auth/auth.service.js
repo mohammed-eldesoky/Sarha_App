@@ -378,9 +378,9 @@ export const forgetPassword = async (req, res, next) => {
 
 export const logout = async (req, res, next) => {
   //get data from req
-  const token = req.headres.authorization;
+const token = req.headers.authorization;
   //storre data into db
-  await Token.create({ token, user: req.user._id }); //req.user from auth middleware
+  await Token.create({ token, user: req.user._id ,type:"access"}); //req.user from auth middleware
 
   //send res
   return res.status(200).json({

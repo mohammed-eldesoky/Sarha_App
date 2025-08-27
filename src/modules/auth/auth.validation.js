@@ -24,5 +24,5 @@ export const forgetPasswordSchema = joi.object({
   email: generalFields.email.required(),
 
   otp: generalFields.otp.required(),
-  neWpassword: generalFields.password.required(),
+  newPassword: generalFields.password.required(),
 });

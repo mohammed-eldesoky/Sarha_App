@@ -11,5 +11,5 @@ export const sendMessageSchema =joi.object({
 
 // schema for get specific message
 export const getMessageSchema = joi.object({
-    messageId: joi.string().hex().length(24).required()
+    id: joi.string().hex().length(24).required()
 }).required();

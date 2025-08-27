@@ -17,7 +17,7 @@ type:{
 },
    expiresAt: {
       type: Date,
-      required: true,
+   
     },
 
 },{timestamps:true});

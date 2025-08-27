@@ -4,40 +4,41 @@ import cloudinary, {
 import { Message } from "./../../DB/models/message.model.js";
 //send message
 
+
 export const sendMessage = async (req, res, next) => {
-  //get data from req
-  const { content } = req.body;
-  const { receiver } = req.params;
-  const { files } = req;
-  //upload into cloudinary
-  const attchment = await uploadFiles({
-    files,
-    options: { folder: `${receiver}/message` },
-  });
 
-  //create message into db
-  const messageCreate = Message.create({
-    content,
-    receiver,
-    attchment,
-    sender: req.user?._id, // if sender exists
-  });
-  //send response
-  return res.status(200).json({
-    message: "message sent successfully",
-    success: true,
-    data: messageCreate,
-  });
+    // get data from req
+    const { content } = req.body;
+    const { receiver } = req.params;
+
+    // if send file or files 
+    const attachments = await uploadFiles(req.files || req.file, {
+      folder: `${receiver}/message`,
+    });
+    // create message in DB
+    const messageCreate = await Message.create({
+      content,
+      receiver,
+      attachments,
+      sender: req.user?._id, // if sender exists
+    });
+
+    // send response
+    return res.status(200).json({
+      message: "Message sent successfully",
+      success: true,
+      data: messageCreate,
+    });
+ 
 };
-
 // get specific message
 export const getMessage = async (req, res, next) => {
   //get message id from params
-  const { messageId } = req.params;
+  const { id } = req.params;
 
   //find message
   const message = await Message.findOne(
-    { _id: messageId, receiver: req.user._id },
+    { _id: id, receiver: req.user._id },
     {},
     { populate: [{ path: "sender", select: "-password -createdAt -updatedAt -_v" } ]}
   ); // return {}||null

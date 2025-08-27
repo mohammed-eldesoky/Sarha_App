@@ -89,11 +89,12 @@ export const uploadprofilePictureCloud = async (req, res, next) => {
 // 4- get user profile
 export const getProfile = async (req, res, next) => {
   // find user
-  const user = await User.findOne(
-    { _id: req.user._id },
-    {},
-    { populate: [{ path: "messages"}]}
-  ); // return {}||null
+const user = await User.findOne({ _id: req.user._id })
+  .select("-password -failedAttempts -credentialUpdateAt -__v -updatedAt -createdAt") 
+  .populate({
+    path: "messages",
+    select: "-userAgent -failedAttempts -credentialUpdateAt -createdAt -updatedAt -password -__v"
+  }); // return {}||null
 
   if (!user) {
     throw new Error("User not found", { cause: 404 });
