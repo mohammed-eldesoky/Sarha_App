@@ -31,6 +31,7 @@ export const register = async (req, res, next) => {
         ],
       },
     ],
+    
   });
   if (userExist) {
     throw new Error("User already exists", { cause: 409 });
@@ -62,7 +63,7 @@ export const register = async (req, res, next) => {
   // create user
 
   const userCreated = await user.save(); //resolve or reject
-
+userCreated.password= undefined;
   return res.status(201).json({
     message: "User created successfully",
     success: true,

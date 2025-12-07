@@ -121,14 +121,12 @@ try {
   res.status(err.cause || 500).json({
     message: err.message,
     success: false,
-    stack: err.stack,
     error: err,
   });
 } catch (err) {
     res.status(err.cause || 500).json({
     message: err.message,
     success: false,
-    stack: err.stack,
     error: err,
 })
 }

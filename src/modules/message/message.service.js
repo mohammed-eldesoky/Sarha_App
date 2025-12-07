@@ -3,8 +3,6 @@ import cloudinary, {
 } from "./../../utils/cloud/cloudnairy.copnfig.js";
 import { Message } from "./../../DB/models/message.model.js";
 //send message
-
-
 export const sendMessage = async (req, res, next) => {
 
     // get data from req
@@ -31,6 +29,7 @@ export const sendMessage = async (req, res, next) => {
     });
  
 };
+
 // get specific message
 export const getMessage = async (req, res, next) => {
   //get message id from params
@@ -40,7 +39,7 @@ export const getMessage = async (req, res, next) => {
   const message = await Message.findOne(
     { _id: id, receiver: req.user._id },
     {},
-    { populate: [{ path: "sender", select: "-password -createdAt -updatedAt -_v" } ]}
+    { populate: [{ path: "sender", select: "-password  -_v" } ]}
   ); // return {}||null
 
   if (!message) {
