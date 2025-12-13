@@ -31,7 +31,6 @@ export const register = async (req, res, next) => {
         ],
       },
     ],
-    
   });
   if (userExist) {
     throw new Error("User already exists", { cause: 409 });
@@ -63,7 +62,11 @@ export const register = async (req, res, next) => {
   // create user
 
   const userCreated = await user.save(); //resolve or reject
-userCreated.password= undefined;
+  userCreated.password = undefined;
+  userCreated.otp = undefined;
+  userCreated.otpExpiration = undefined;
+
+  //send response
   return res.status(201).json({
     message: "User created successfully",
     success: true,
@@ -239,10 +242,10 @@ export const login = async (req, res, next) => {
   if (!match) {
     throw new Error("Invalid credentials", { cause: 401 });
   }
-// check if user deleted 
+  // check if user deleted
   if (userExist.deletedAt) {
-   userExist.deletedAt= undefined;
-   await userExist.save();
+    userExist.deletedAt = undefined;
+    await userExist.save();
   }
   // create JWT token
   const accessToken = generateToken({
@@ -379,9 +382,9 @@ export const forgetPassword = async (req, res, next) => {
 
 export const logout = async (req, res, next) => {
   //get data from req
-const token = req.headers.authorization;
+  const token = req.headers.authorization;
   //storre data into db
-  await Token.create({ token, user: req.user._id ,type:"access"}); //req.user from auth middleware
+  await Token.create({ token, user: req.user._id, type: "access" }); //req.user from auth middleware
 
   //send res
   return res.status(200).json({

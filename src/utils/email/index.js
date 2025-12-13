@@ -4,11 +4,15 @@ export async function sendEmail({to,subject,html}) {
 // step:1 // create a transporter
 const transporter =  nodemailer.createTransport({
     host:"smtp.gmail.com",
-    port: 587,
+    port: 465,
+    secure:true,
     auth:{
         user:process.env.EMAIL_USER,
         pass:process.env.EMAIL_PASS 
     },
+    tls:{
+        rejectUnauthorized:false
+    }
 
 });
 // step:2 // send email

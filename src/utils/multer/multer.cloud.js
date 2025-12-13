@@ -13,5 +13,5 @@ export function fileUpload ({allowtype=["image/jpeg","image/png"]}={}) {
     }
   };
 
-  return multer({ fileFilter, storage }); // new multer()
+  return multer({ fileFilter, storage ,limits:{fileSize:2*1024*1024}}); // new multer()
 }
