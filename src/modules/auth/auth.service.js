@@ -11,7 +11,7 @@ import { generateToken } from "../../utils/token/index.js";
 // Register user service
 export const register = async (req, res, next) => {
   //get data from req body
-  const { fullName, email, password, phoneNumber, dob } = req.body;
+  const { fullName, email, password, phoneNumber, dob ,nickName} = req.body;
 
   //check user existance
   const userExist = await User.findOne({
@@ -43,6 +43,8 @@ export const register = async (req, res, next) => {
     password: hashPassword(password), // hash password
     phoneNumber,
     dob,
+    nickName,
+
   });
 
   //generate otp

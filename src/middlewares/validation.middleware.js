@@ -32,4 +32,5 @@ export const generalFields = {
   dob: joi.date(),
   otp: joi.string().length(5),
   repassword: joi.string().min(8).valid(joi.ref("password")), // should be equal to `password`
+  nickName:joi.string().min(3).required(),
 };

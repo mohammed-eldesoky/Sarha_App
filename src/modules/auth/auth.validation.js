@@ -9,6 +9,7 @@ export const registerSchema = joi
     password: generalFields.password,
     phoneNumber: generalFields.phoneNumber, //optional if email exist
     dob: generalFields.dob,
+    nickName:generalFields.nickName
   })
   .or("email", "phoneNumber").required();
 

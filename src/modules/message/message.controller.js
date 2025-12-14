@@ -31,4 +31,7 @@ router.get(
   messageService.getMessage
 );
 
+// get all messages for specific user
+router.get("/", isAuthorized, messageService.getAllMessages);
+
 export default router;

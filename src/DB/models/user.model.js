@@ -87,6 +87,12 @@ credentialUpdateAt:{
 },
 deletedAt: {
     type: Date,
+},
+nickName:{
+    type:String,
+    required:true,
+    unique:true,
+    lowercase:true,
 }
 },
     {timestamps: true,toObject:{virtuals:true},toJSON:{virtuals:true}});
