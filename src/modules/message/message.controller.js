@@ -8,7 +8,7 @@ import { isAuthorized } from "./../../middlewares/auth.middleware.js";
 const router = Router();
 //sarha.com/message/549894859489584
 router.post(
-  "/:receiver",
+  "/:nickName",
   fileUpload().array("attachments", 2),
   isValid(sendMessageSchema),
   messageService.sendMessage
@@ -16,7 +16,7 @@ router.post(
 
 // another endpoint for send message with sender info
 router.post(
-  "/:receiver",
+  "/:nickName",
   isAuthorized,
   fileUpload().array("attachments", 2),
   isValid(sendMessageSchema),

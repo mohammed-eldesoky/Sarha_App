@@ -11,7 +11,7 @@ router.post(
   fileUpload().none(),//parse data body >>form data
   authService.register
 );
-
+router.post("/refresh",authService.refreshAccessToken);
 router.post("/login",isValid(loginSchema), authService.login);
 router.post("/verify-account", authService.verifyAccount);
 router.post("/send-otp", authService.sendOtp);

@@ -72,52 +72,7 @@ try {
     fs.unlinkSync(req.file.path); // if error, delete the file
   }
 
-  if (err.message == "jwt expired") {
-    const refreshToken = req.headers.refreshtoken;
-
-    // check token existence and not expired
-    const tokenExist = await Token.findOne({
-      token: refreshToken,
-      type: "refresh",
-      expiresAt: { $gt: new Date() },
-    });
-
-    if (!tokenExist) {
-      throw new Error("invalid or expired refresh token", { cause: 401 });
-    }
-
-    // verify payload after confirming existence
-    const payload = verifyToken(refreshToken);
-
-    // delete old token
-    await Token.deleteOne({ _id: tokenExist._id });
-
-    // generate new tokens
-    const accessToken = generateToken({
-      payload: { id: payload.id },
-      options: { expiresIn: "15m" },
-    });
-
-    const newrefreshToken = generateToken({
-      payload: { id: payload.id },
-      options: { expiresIn: "7d" },
-    });
-
-    // store new refresh token in DB
-    await Token.create({
-      token: newrefreshToken,
-      user: payload.id,
-      type: "refresh",
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-    });
-
-    return res.status(200).json({
-      message: "refresh token successfully",
-      success: true,
-      data: { accessToken, refreshToken: newrefreshToken },
-    });
-  }
-
+ 
   res.status(err.cause || 500).json({
     message: err.message,
     success: false,

@@ -2,20 +2,30 @@ import cloudinary, {
   uploadFiles,
 } from "./../../utils/cloud/cloudnairy.copnfig.js";
 import { Message } from "./../../DB/models/message.model.js";
+import { User } from "../../DB/models/user.model.js";
 //send message
 export const sendMessage = async (req, res, next) => {
   // get data from req
   const { content } = req.body;
-  const { receiver } = req.params;
+  const { nickName } = req.params;
+
+  // find user by nickname
+  const user = await User.findOne({ nickName: nickName.toLowerCase() });
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
+    });
+  }
 
   // if send file or files
   const attachments = await uploadFiles(req.files || req.file, {
-    folder: `${receiver}/message`,
+    folder: `${user._id}/message`, 
   });
   // create message in DB
   const messageCreate = await Message.create({
     content,
-    receiver,
+    receiver: user._id,
     attachments,
     sender: req.user?._id, // if sender exists
   });

@@ -308,37 +308,62 @@ export const updatePassword = async (req, res, next) => {
 };
 
 //refresh token
+export const refreshAccessToken = async (req, res, next) => {
+  try {
+    const refreshToken = req.headers.refreshtoken;
 
-// export const refreshAccessToken = async (req, res, next) => {
-//   const { refreshToken } = req.body;
-//   if (!refreshToken) {
-//     throw new Error("Refresh token is required", { cause: 401 });
-//   }
+    if (!refreshToken) {
+      throw new Error("Refresh token is required", { cause: 401 });
+    }
 
-//   // check if refresh token is in DB
-//   const user = await User.findOne({ refreshToken });
-//   if (!user) {
-//     throw new Error("Invalid refresh token", { cause: 403 });
-//   }
+    const tokenExist = await Token.findOne({
+      token: refreshToken,
+      type: "refresh",
+      expiresAt: { $gt: new Date() },
+    });
 
-//   // verify refresh token
-//   jwt.verify(refreshToken, process.env.TOKEN_SECRET, (err, payload) => {
-//     if (err) {
-//       throw new Error("Invalid refresh token", { cause: 403 });
-//     }
+    if (!tokenExist) {
+      throw new Error("Invalid or expired refresh token", { cause: 403 });
+    }
 
-//     // generate new access token
-//     const newAccessToken = jwt.sign(
-//       { id: payload.id, email: payload.email },
-//       process.env.TOKEN_SECRET,
-//       { expiresIn: "15m" }
-//     );
+    const payload = jwt.verify(
+      refreshToken,
+      process.env.TOKEN_SECRET
+    );
 
-//     return res.status(200).json({
-//       accessToken: newAccessToken,
-//     });
-//   });
-// };
+    // rotate
+    await Token.deleteOne({ _id: tokenExist._id });
+
+    const newAccessToken = jwt.sign(
+      { id: payload.id },
+      process.env.TOKEN_SECRET,
+      { expiresIn: "15m" }
+    );
+
+    const newRefreshToken = jwt.sign(
+      { id: payload.id },
+      process.env.TOKEN_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    await Token.create({
+      token: newRefreshToken,
+      user: payload.id,
+      type: "refresh",
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        accessToken: newAccessToken,
+        refreshToken: newRefreshToken,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 
 // forget password
 
