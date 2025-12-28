@@ -11,7 +11,7 @@ import { generateToken } from "../../utils/token/index.js";
 // Register user service
 export const register = async (req, res, next) => {
   //get data from req body
-  const { fullName, email, password, phoneNumber, dob ,nickName} = req.body;
+  const { fullName, email, password, phoneNumber, dob, nickName } = req.body;
 
   //check user existance
   const userExist = await User.findOne({
@@ -44,7 +44,6 @@ export const register = async (req, res, next) => {
     phoneNumber,
     dob,
     nickName,
-
   });
 
   //generate otp
@@ -251,7 +250,7 @@ export const login = async (req, res, next) => {
   }
   // create JWT token
   const accessToken = generateToken({
-    payload: { id: userExist._id },
+    payload: { id: userExist._id, nickName: userExist.nickName },
     options: { expiresIn: "15m" },
   });
 
@@ -326,10 +325,7 @@ export const refreshAccessToken = async (req, res, next) => {
       throw new Error("Invalid or expired refresh token", { cause: 403 });
     }
 
-    const payload = jwt.verify(
-      refreshToken,
-      process.env.TOKEN_SECRET
-    );
+    const payload = jwt.verify(refreshToken, process.env.TOKEN_SECRET);
 
     // rotate
     await Token.deleteOne({ _id: tokenExist._id });
